@@ -1,11 +1,14 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 function preflight_check() {
     # ディレクトリを保証
     local SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    cd "$SCRIPT_DIR" || exit 1
+    if [ $SCRIPT_DIR != "$(pwd)" ]; then
+        echo "error: プロジェクトルートで実行されていない" >&2
+        exit 1
+    fi
 
     # コミットされていることを保証
     local CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -34,7 +37,7 @@ npm run build
 cp -r dist/* $tmp_dir
 
 git switch gh-pages
-# rm -rf *
+rm -rf *
 cp -r $tmp_dir/* .
 git add .
 git commit -m '[deploy]'
