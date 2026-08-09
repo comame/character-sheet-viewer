@@ -24,6 +24,7 @@ function create_tmp_dir() {
 prepare_git
 
 tmp_dir=$(create_tmp_dir)
+npm ci
 npm run build
 cp -r dist/* $tmp_dir
 
