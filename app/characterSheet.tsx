@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { Component, ComponentProps, ReactNode, useEffect, useRef } from "react";
 import { Button } from "./button";
 import { parseCommands, character } from "./character";
 import { DragIndicatorSVG, OpenInNewSVG } from "./icons";
@@ -89,4 +89,48 @@ export function CharacterSheet({
       </div>
     </div>
   );
+}
+
+export class CharacterSheetErrorBoundary extends Component<
+  { children: ReactNode } & Omit<
+    ComponentProps<typeof CharacterSheet>,
+    "character"
+  >,
+  { hasError: boolean }
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    console.error(error);
+    return { hasError: true };
+  }
+
+  render(): ReactNode {
+    if (this.state.hasError) {
+      const { children, ...rest } = this.props;
+
+      return (
+        <CharacterSheet
+          character={{
+            data: {
+              name: "読み込み失敗",
+              iconUrl: "",
+              commands: "",
+              externalUrl: "",
+              memo: "",
+              params: [],
+              status: [],
+            },
+            kind: "character",
+          }}
+          {...rest}
+        />
+      );
+    }
+
+    return this.props.children;
+  }
 }

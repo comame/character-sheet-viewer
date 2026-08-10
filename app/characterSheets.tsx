@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CharacterSheet } from "./characterSheet";
+import { CharacterSheet, CharacterSheetErrorBoundary } from "./characterSheet";
 import { character } from "./character";
 
 export function CharacterSheets({
@@ -108,16 +108,25 @@ export function CharacterSheets({
       ref={selfRef}
     >
       {characters.map((c, i) => (
-        <CharacterSheet
+        <CharacterSheetErrorBoundary
           key={c.data.name}
-          character={c}
           index={i}
           isDroppableLeft={i === 0 && isLeftDroppable}
           isDroppableRight={rightDroppableIndex === i}
           onRemove={() => removeSheet(i)}
           onDragStart={onDragStart}
           onMemoChange={(memo) => onMemoChange(i, memo)}
-        />
+        >
+          <CharacterSheet
+            character={c}
+            index={i}
+            isDroppableLeft={i === 0 && isLeftDroppable}
+            isDroppableRight={rightDroppableIndex === i}
+            onRemove={() => removeSheet(i)}
+            onDragStart={onDragStart}
+            onMemoChange={(memo) => onMemoChange(i, memo)}
+          />
+        </CharacterSheetErrorBoundary>
       ))}
     </div>
   );
