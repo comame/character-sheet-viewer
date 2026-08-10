@@ -111,11 +111,16 @@ body {
     border-top: 1px solid var(--border-default);
   }
 
-  .drag {
+  .right-top {
     position: absolute;
     top: 8px;
     right: 2px;
-    cursor: grab;
+
+    display: flex;
+
+    .drag {
+      cursor: grab;
+    }
   }
 
   .drop-indicator {

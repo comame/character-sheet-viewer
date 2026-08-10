@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CharacterSheet } from "./characterSheet";
 import { character } from "./character";
 
@@ -12,6 +12,7 @@ export function CharacterSheets({
   const [isLeftDroppable, setIsLeftDroppable] = useState(false);
   const [rightDroppableIndex, setRightDroppableIndex] = useState(-1);
   const [draggingIndex, setDraggingIndex] = useState(-1);
+  const [isDragging, setIsDragging] = useState(false);
 
   const selfRef = useRef<HTMLDivElement>(null);
 
@@ -20,6 +21,10 @@ export function CharacterSheets({
   };
 
   const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!isDragging) {
+      // 想定外のもの (リンクとか) がドラッグされてきた場合は無視する
+      return;
+    }
     e.preventDefault();
 
     const em = () => {
@@ -63,10 +68,24 @@ export function CharacterSheets({
       setCharacters(updated);
     }
 
+    setIsDragging(false);
     setIsLeftDroppable(false);
     setRightDroppableIndex(-1);
     setDraggingIndex(-1);
   };
+
+  useEffect(() => {
+    const onDocumentDragStart = (e: DragEvent) => {
+      if ((e.target as HTMLElement).classList.contains("drag")) {
+        setIsDragging(true);
+      }
+    };
+
+    document.addEventListener("dragstart", onDocumentDragStart);
+    return () => {
+      document.removeEventListener("dragstart", onDocumentDragStart);
+    };
+  }, []);
 
   const removeSheet = (index: number) => {
     if (!confirm("本当に削除しますか？")) return;

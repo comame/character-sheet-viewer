@@ -1,7 +1,7 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "./button";
 import { parseCommands, character } from "./character";
-import { DragIndicatorSVG } from "./icons";
+import { DragIndicatorSVG, OpenInNewSVG } from "./icons";
 
 export function CharacterSheet({
   character,
@@ -31,8 +31,10 @@ export function CharacterSheet({
 
   return (
     <div className="CharacterSheet">
-      <div className="drag" draggable onDragStart={onDragStartSelf}>
-        <DragIndicatorSVG />
+      <div className="right-top">
+        <div className="drag" draggable onDragStart={onDragStartSelf}>
+          <DragIndicatorSVG />
+        </div>
       </div>
       {isDroppableRight && (
         <div className="drop-indicator drop-indicator-right" />
@@ -42,12 +44,15 @@ export function CharacterSheet({
       )}
 
       <div className="name" ref={dragImageRef}>
-        <img src={data.iconUrl}></img>
-        <h2>{data.name}</h2>
+        <a href={data.externalUrl} target="_blank" rel="noopener noreferrer">
+          <img src={data.iconUrl}></img>
+        </a>
+        <a href={data.externalUrl} target="_blank" rel="noopener noreferrer">
+          <h2>{data.name}</h2>
+        </a>
       </div>
 
       {/* TODO: ここになんかメモできたらいいよね */}
-      {/* TODO: キャラシにジャンプするボタン */}
 
       <div className="parameters">
         {data.params.map((p) => (
