@@ -55,6 +55,10 @@ body {
       height: 3em;
     }
 
+    a {
+      overflow: hidden;
+    }
+
     h2 {
       font-size: 1.1em;
       font-weight: normal;
@@ -62,8 +66,10 @@ body {
       margin-top: 0;
       margin-bottom: 0;
       margin-left: 1em;
+
       text-overflow: ellipsis;
       overflow: hidden;
+      white-space: nowrap;
     }
   }
 
