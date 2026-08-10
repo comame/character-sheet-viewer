@@ -1,4 +1,11 @@
-import { Component, ComponentProps, ReactNode, useEffect, useRef } from "react";
+import {
+  Component,
+  ComponentProps,
+  ErrorInfo,
+  ReactNode,
+  useEffect,
+  useRef,
+} from "react";
 import { Button } from "./button";
 import { parseCommands, character } from "./character";
 import { DragIndicatorSVG, OpenInNewSVG } from "./icons";
@@ -22,6 +29,21 @@ export function CharacterSheet({
   onDragStart: (index: number) => void;
   onMemoChange: (memo: string) => void;
 }) {
+  if (character.hasError) {
+    character = {
+      kind: "character",
+      data: {
+        name: "！読み込みエラー！",
+        commands: "",
+        externalUrl: "",
+        memo: `名前: ${character.data?.name}`,
+        params: [],
+        status: [],
+      },
+      hasError: true,
+    };
+  }
+
   const data = character.data;
   const skills = parseCommands(character);
 
@@ -47,7 +69,7 @@ export function CharacterSheet({
 
       <div className="name" ref={dragImageRef}>
         <a href={data.externalUrl} target="_blank" rel="noopener noreferrer">
-          <img src={data.iconUrl}></img>
+          <img src={data.iconUrl === "" ? undefined : data.iconUrl}></img>
         </a>
         <a href={data.externalUrl} target="_blank" rel="noopener noreferrer">
           <h2>{data.name}</h2>
@@ -92,43 +114,27 @@ export function CharacterSheet({
 }
 
 export class CharacterSheetErrorBoundary extends Component<
-  { children: ReactNode } & Omit<
-    ComponentProps<typeof CharacterSheet>,
-    "character"
-  >,
-  { hasError: boolean }
+  { children: ReactNode; onError: () => void },
+  { hasError: boolean; raised: boolean }
 > {
   constructor(props: any) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, raised: false };
   }
 
   static getDerivedStateFromError(error: Error) {
-    console.error(error);
     return { hasError: true };
   }
 
-  render(): ReactNode {
-    if (this.state.hasError) {
-      const { children, ...rest } = this.props;
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    this.props.onError();
+    this.setState({ raised: true });
+  }
 
-      return (
-        <CharacterSheet
-          character={{
-            data: {
-              name: "読み込み失敗",
-              iconUrl: "",
-              commands: "",
-              externalUrl: "",
-              memo: "",
-              params: [],
-              status: [],
-            },
-            kind: "character",
-          }}
-          {...rest}
-        />
-      );
+  render(): ReactNode {
+    if (this.state.hasError && !this.state.raised) {
+      console.log("error render");
+      return <div>ERROR</div>;
     }
 
     return this.props.children;

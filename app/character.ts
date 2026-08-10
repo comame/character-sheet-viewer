@@ -1,6 +1,7 @@
 type character = {
   kind: "character";
   data: characterData;
+  hasError?: boolean;
 };
 
 type characterData = {

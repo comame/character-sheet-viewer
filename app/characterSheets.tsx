@@ -100,6 +100,12 @@ export function CharacterSheets({
     setCharacters(updated);
   };
 
+  const onLoadError = (index: number) => {
+    const updated = [...characters];
+    updated[index].hasError = true;
+    setCharacters(updated);
+  };
+
   return (
     <div
       className="CharacterSheets"
@@ -110,12 +116,7 @@ export function CharacterSheets({
       {characters.map((c, i) => (
         <CharacterSheetErrorBoundary
           key={c.data.name}
-          index={i}
-          isDroppableLeft={i === 0 && isLeftDroppable}
-          isDroppableRight={rightDroppableIndex === i}
-          onRemove={() => removeSheet(i)}
-          onDragStart={onDragStart}
-          onMemoChange={(memo) => onMemoChange(i, memo)}
+          onError={() => onLoadError(i)}
         >
           <CharacterSheet
             character={c}
