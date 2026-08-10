@@ -202,10 +202,15 @@ body {
   bottom: 0;
   left: 0;
   width: 100%;
-  text-align: right;
   background: var(--background-light);
   border-top: 1px solid var(--border-default);
   padding: 0.5em 1em;
+  display: flex;
+  justify-content: space-between;
+
+  .left a {
+    vertical-align: sub;
+  }
 
   .right > * {
     margin-left: 1em;
