@@ -94,6 +94,12 @@ export function CharacterSheets({
     setCharacters(updated);
   };
 
+  const onMemoChange = (index: number, memo: string) => {
+    const updated = [...characters];
+    updated[index].data.memo = memo;
+    setCharacters(updated);
+  };
+
   return (
     <div
       className="CharacterSheets"
@@ -110,6 +116,7 @@ export function CharacterSheets({
           isDroppableRight={rightDroppableIndex === i}
           onRemove={() => removeSheet(i)}
           onDragStart={onDragStart}
+          onMemoChange={(memo) => onMemoChange(i, memo)}
         />
       ))}
     </div>

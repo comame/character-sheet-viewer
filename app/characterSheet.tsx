@@ -10,6 +10,7 @@ export function CharacterSheet({
   isDroppableLeft = false,
   onDragStart,
   onRemove,
+  onMemoChange,
 }: {
   character: character;
   index: number;
@@ -19,6 +20,7 @@ export function CharacterSheet({
   isDroppableLeft?: boolean;
   onRemove: () => void;
   onDragStart: (index: number) => void;
+  onMemoChange: (memo: string) => void;
 }) {
   const data = character.data;
   const skills = parseCommands(character);
@@ -52,7 +54,11 @@ export function CharacterSheet({
         </a>
       </div>
 
-      {/* TODO: ここになんかメモできたらいいよね */}
+      <textarea
+        className="memo typography-weak"
+        defaultValue={data.memo}
+        onChange={(e) => onMemoChange(e.currentTarget.value)}
+      />
 
       <div className="parameters">
         {data.params.map((p) => (
