@@ -22,7 +22,6 @@ export function CharacterSheet({
 }) {
   const data = character.data;
   const skills = parseCommands(character);
-  console.log(data.commands);
 
   const dragImageRef = useRef<HTMLDivElement>(null);
   const onDragStartSelf = (e: React.DragEvent<HTMLDivElement>) => {

@@ -69,11 +69,8 @@ const skillParsers: Record<string, skillParser> = {
   gaiacare_da: (command, character) => {
     const match = command.match(/^(\d)DA{(.+)} 〈(.+)〉/);
     if (!match) {
-      console.log(command);
       return null;
     }
-
-    console.log(match);
 
     // xDAy を xDM<=(x+y) に変換
     const parameter = Number.parseInt(
