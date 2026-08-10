@@ -47,6 +47,7 @@ export function CharacterSheet({
       </div>
 
       {/* TODO: ここになんかメモできたらいいよね */}
+      {/* TODO: キャラシにジャンプするボタン */}
 
       <div className="parameters">
         {data.params.map((p) => (

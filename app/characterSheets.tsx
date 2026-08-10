@@ -46,6 +46,7 @@ export function CharacterSheets({
   const onDrop = () => {
     const dragging = characters[draggingIndex];
 
+    // TODO: なんか右から左にドロップすると壊れてそう
     const updated = [...characters];
     if (isLeftDroppable) {
       updated.splice(draggingIndex, 1);

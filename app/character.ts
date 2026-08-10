@@ -86,6 +86,7 @@ function parseCommands(commands: string): skill[] {
   const lines = commands.split("\n");
 
   for (const line of lines) {
+    // TODO: エモクロア対応したい
     const match = line.match(/^CCB?<=(\d+).+【(.+)】/);
     if (match === null || match.length < 3) {
       continue;
