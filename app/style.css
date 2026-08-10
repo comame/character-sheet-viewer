@@ -69,9 +69,10 @@ body {
 
   .row {
     display: grid;
-    grid-template-columns: 1fr 2em;
+    grid-template-columns: 1fr min-content;
     align-items: center;
-    padding: 0 0.5em;
+    padding: 0.1em 0.5em;
+    gap: 0.5em;
 
     .label {
       white-space: nowrap;
@@ -80,6 +81,7 @@ body {
 
     .value {
       font-style: monospace;
+      white-space: nowrap;
       text-align: end;
     }
 

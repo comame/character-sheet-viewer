@@ -7,9 +7,10 @@ type characterData = {
   name: string;
   commands: string;
   externalUrl: string;
-  iconUrl: string;
+  iconUrl?: string;
   params: parameter[];
   status: status[];
+  memo?: string;
 };
 
 type parameter = {
@@ -26,50 +27,11 @@ type status = {
 
 type skill = {
   label: string;
-  value: number;
+  value: string;
 };
 
-function isStatus(obj: any): obj is status {
-  return (
-    obj &&
-    typeof obj === "object" &&
-    typeof obj.label === "string" &&
-    typeof obj.value === "number" &&
-    typeof obj.max === "number"
-  );
-}
-
-function isParameter(obj: any): obj is parameter {
-  return (
-    obj &&
-    typeof obj === "object" &&
-    typeof obj.label === "string" &&
-    typeof obj.value === "string"
-  );
-}
-
-function isCharacterData(obj: any): obj is characterData {
-  return (
-    obj &&
-    typeof obj === "object" &&
-    typeof obj.name === "string" &&
-    typeof obj.commands === "string" &&
-    typeof obj.externalUrl === "string" &&
-    typeof obj.iconUrl === "string" &&
-    Array.isArray(obj.params) &&
-    obj.params.every(isParameter) &&
-    Array.isArray(obj.status) &&
-    obj.status.every(isStatus)
-  );
-}
-
 function isCharacter(obj: any): obj is character {
-  return (
-    obj &&
-    typeof obj === "object" &&
-    obj.kind === "character" &&
-    isCharacterData(obj.data)
-  );
+  return obj && typeof obj === "object" && obj.kind === "character";
 }
 
 function parseCharacter(json: string): character {
@@ -81,20 +43,89 @@ function parseCharacter(json: string): character {
   return parsed;
 }
 
-function parseCommands(commands: string): skill[] {
+type skillParser = (command: string, character: character) => skill | null;
+
+const skillParsers: Record<string, skillParser> = {
+  coc: (command, character) => {
+    const match = command.match(/^CCB?<=(\d+).+【(.+)】/);
+    if (!match) {
+      return null;
+    }
+    return {
+      label: match[2],
+      value: match[1],
+    };
+  },
+  emoklore: (command, character) => {
+    const match = command.match(/^(\dDM<=\d) 〈(.+)〉/);
+    if (!match) {
+      return null;
+    }
+    return {
+      label: match[2],
+      value: match[1],
+    };
+  },
+  gaiacare_da: (command, character) => {
+    const match = command.match(/^(\d)DA{(.+)} 〈(.+)〉/);
+    if (!match) {
+      console.log(command);
+      return null;
+    }
+
+    console.log(match);
+
+    // xDAy を xDM<=(x+y) に変換
+    const parameter = Number.parseInt(
+      character.data.params.find((p) => p.label === match[2])?.value ?? "0",
+    );
+    const dice = Number.parseInt(match[1]);
+    const value = `${dice}DM<=${dice + parameter}`;
+
+    return {
+      label: match[3],
+      value: value,
+    };
+  },
+  gaiacare_dm: (command, character) => {
+    const match = command.match(/^(\d)DM<={(.+)} 〈(.+)〉/);
+    if (!match) {
+      return null;
+    }
+
+    const parameter = Number.parseInt(
+      character.data.params.find((p) => p.label === match[2])?.value ?? "0",
+    );
+    const dice = Number.parseInt(match[1]);
+    const value = `${dice}DM<=${parameter}`;
+
+    return {
+      label: match[3],
+      value: value,
+    };
+  },
+};
+
+function parseCommands(character: character): skill[] {
   const skills: skill[] = [];
-  const lines = commands.split("\n");
+  const lines = character.data.commands.split("\n");
 
   for (const line of lines) {
-    // TODO: エモクロア対応したい
-    const match = line.match(/^CCB?<=(\d+).+【(.+)】/);
-    if (match === null || match.length < 3) {
+    let result: skill | null = null;
+    for (const parser of Object.values(skillParsers)) {
+      result = parser(line, character);
+      if (result !== null) {
+        break;
+      }
+    }
+
+    if (result === null) {
       continue;
     }
 
     skills.push({
-      label: match[2],
-      value: parseInt(match[1]),
+      label: result.label,
+      value: result.value,
     });
   }
 
