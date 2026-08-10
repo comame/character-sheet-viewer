@@ -28,7 +28,7 @@ export function CharacterSheets({
     };
 
     const rect = selfRef.current!.getBoundingClientRect();
-    const x = e.clientX - rect.left;
+    const x = e.clientX - rect.left + selfRef.current!.scrollLeft;
 
     const gap = em();
     const sheetWidth = 280;
