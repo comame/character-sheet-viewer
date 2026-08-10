@@ -46,15 +46,20 @@ export function CharacterSheets({
   const onDrop = () => {
     const dragging = characters[draggingIndex];
 
-    // TODO: なんか右から左にドロップすると壊れてそう
-    const updated = [...characters];
+    let updated = [...characters];
     if (isLeftDroppable) {
-      updated.splice(draggingIndex, 1);
-      updated.unshift(dragging);
+      updated.splice(draggingIndex, 1); // 元の要素を消して
+      updated.unshift(dragging); // 先頭に追加
       setCharacters(updated);
     } else {
-      updated.splice(draggingIndex, 1);
-      updated.splice(rightDroppableIndex, 0, dragging);
+      updated.splice(rightDroppableIndex + 1, 0, dragging); // 先に追加して
+      if (draggingIndex > rightDroppableIndex) {
+        // 右から左
+        updated.splice(draggingIndex + 1, 1); // 元の要素を消す
+      } else {
+        // 左から右
+        updated.splice(draggingIndex, 1); // 元の要素を消す
+      }
       setCharacters(updated);
     }
 
